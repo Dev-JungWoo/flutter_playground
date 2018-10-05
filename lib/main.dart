@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: AuthPage(title: 'Authorization Test',),
+      home: AuthPage(title: 'Login',), //SignInDemo(),
 //      home: new MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
