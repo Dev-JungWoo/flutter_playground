@@ -11,24 +11,12 @@ import 'package:flutter_playgrounds/widgets/SignInButton.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-//final GoogleSignIn _googleSignIn = new GoogleSignIn();
 final GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: <String>[
     'email',
     'https://www.googleapis.com/auth/contacts.readonly',
   ],
 );
-
-//
-//class MyApp extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    return new MaterialApp(
-//      title: 'Firebase Auth Demo',
-//      home: new MyHomePage(title: 'Firebase Auth Demo'),
-//    );
-//  }
-//}
 
 class AuthPage extends StatefulWidget {
   AuthPage({Key key, this.title}) : super(key: key);
@@ -45,6 +33,110 @@ class _AuthPageState extends State<AuthPage> {
   String verificationId;
   final String testSmsCode = '888888';
   final String testPhoneNumber = '+1 408-555-6969';
+
+  FirebaseUser user;
+
+  _AuthPageState() {
+    _auth.currentUser().then((user) => setState(() {
+          this.user = user;
+        }));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: _getLoginButtons());
+  }
+
+  Widget _getLoginButtons() {
+    if (user != null) {
+      return Center(child: Text('User logged in as ${user.displayName}'));
+    }
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          MaterialButton(
+            elevation: 5.0,
+            child: signInButton('Sign in with Google', 'images/google.png',
+                Color.fromRGBO(68, 68, 76, 0.8)),
+            onPressed: () {},
+            color: Colors.white,
+          ),
+          Padding(padding: EdgeInsets.all(5.0)),
+          MaterialButton(
+            elevation: 5.0,
+            child: signInButton(
+                'Sign in with Facebook', 'images/facebook.png', Colors.white),
+            onPressed: () {},
+            color: Color.fromRGBO(58, 89, 152, 1.0),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _getOriginalBody() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        new MaterialButton(
+            child: const Text('Test signInAnonymously'),
+            onPressed: () {
+              setState(() {
+                _message = _testSignInAnonymously();
+              });
+            }),
+        new MaterialButton(
+            child: const Text('Test signInWithGoogle'),
+            onPressed: () {
+              setState(() {
+                _message = _testSignInWithGoogle();
+              });
+            }),
+        new MaterialButton(
+            child: const Text('Test verifyPhoneNumber'),
+            onPressed: () {
+              _testVerifyPhoneNumber();
+            }),
+        new Container(
+          margin: const EdgeInsets.only(
+            top: 8.0,
+            bottom: 8.0,
+            left: 16.0,
+            right: 16.0,
+          ),
+          child: new TextField(
+            controller: _smsCodeController,
+            decoration: const InputDecoration(
+              hintText: 'SMS Code',
+            ),
+          ),
+        ),
+        new MaterialButton(
+            child: const Text('Test signInWithPhoneNumber'),
+            onPressed: () {
+              if (_smsCodeController.text != null) {
+                setState(() {
+                  _message =
+                      _testSignInWithPhoneNumber(_smsCodeController.text);
+                });
+              }
+            }),
+        new FutureBuilder<String>(
+            future: _message,
+            builder: (_, AsyncSnapshot<String> snapshot) {
+              return new Text(snapshot.data ?? '',
+                  style:
+                      const TextStyle(color: Color.fromARGB(255, 0, 155, 0)));
+            }),
+      ],
+    );
+  }
 
   Future<String> _testSignInAnonymously() async {
     final FirebaseUser user = await _auth.signInAnonymously();
@@ -145,98 +237,5 @@ class _AuthPageState extends State<AuthPage> {
 
     _smsCodeController.text = '';
     return 'signInWithPhoneNumber succeeded: $user';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: _getLoginButtons()
-    );
-  }
-
-  Widget _getLoginButtons() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          MaterialButton(
-            elevation: 5.0,
-            child: signInButton('Sign in with Google', 'images/google.png',
-                Color.fromRGBO(68, 68, 76, 0.8)),
-            onPressed: () {},
-            color: Colors.white,
-          ),
-          Padding(padding: EdgeInsets.all(5.0)),
-          MaterialButton(
-            elevation: 5.0,
-            child: signInButton(
-                'Sign in with Facebook', 'images/facebook.png', Colors.white),
-            onPressed: () {},
-            color: Color.fromRGBO(58, 89, 152, 1.0),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _getOriginalBody() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        new MaterialButton(
-            child: const Text('Test signInAnonymously'),
-            onPressed: () {
-              setState(() {
-                _message = _testSignInAnonymously();
-              });
-            }),
-        new MaterialButton(
-            child: const Text('Test signInWithGoogle'),
-            onPressed: () {
-              setState(() {
-                _message = _testSignInWithGoogle();
-              });
-            }),
-        new MaterialButton(
-            child: const Text('Test verifyPhoneNumber'),
-            onPressed: () {
-              _testVerifyPhoneNumber();
-            }),
-        new Container(
-          margin: const EdgeInsets.only(
-            top: 8.0,
-            bottom: 8.0,
-            left: 16.0,
-            right: 16.0,
-          ),
-          child: new TextField(
-            controller: _smsCodeController,
-            decoration: const InputDecoration(
-              hintText: 'SMS Code',
-            ),
-          ),
-        ),
-        new MaterialButton(
-            child: const Text('Test signInWithPhoneNumber'),
-            onPressed: () {
-              if (_smsCodeController.text != null) {
-                setState(() {
-                  _message =
-                      _testSignInWithPhoneNumber(_smsCodeController.text);
-                });
-              }
-            }),
-        new FutureBuilder<String>(
-            future: _message,
-            builder: (_, AsyncSnapshot<String> snapshot) {
-              return new Text(snapshot.data ?? '',
-                  style:
-                      const TextStyle(color: Color.fromARGB(255, 0, 155, 0)));
-            }),
-      ],
-    );
   }
 }
