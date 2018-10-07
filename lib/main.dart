@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-import 'widgets/AuthPage.dart';
+import 'package:flutter_playgrounds/widgets/messaging/PushMessagingExample.dart';
 
 void main() => runApp(new MyApp());
 
@@ -14,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: AuthPage(title: 'Login',), //SignInDemo(),
+      home: PushMessagingExample() //AuthPage(title: 'Login',),
 //      home: new MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }

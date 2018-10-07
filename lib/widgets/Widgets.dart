@@ -26,3 +26,23 @@ Widget signInButton(title, uri, [color = Colors.white]) {
     ),
   );
 }
+
+Widget buildDialog(BuildContext context, String text) {
+  return new AlertDialog(
+    content: new Text(text),
+    actions: <Widget>[
+      new FlatButton(
+        child: const Text('CLOSE'),
+        onPressed: () {
+          Navigator.pop(context, false);
+        },
+      ),
+      new FlatButton(
+        child: const Text('SHOW'),
+        onPressed: () {
+          Navigator.pop(context, true);
+        },
+      ),
+    ],
+  );
+}

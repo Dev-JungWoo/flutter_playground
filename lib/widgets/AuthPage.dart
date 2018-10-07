@@ -7,7 +7,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_playgrounds/widgets/SignInButton.dart';
+import 'package:flutter_playgrounds/widgets/Widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
