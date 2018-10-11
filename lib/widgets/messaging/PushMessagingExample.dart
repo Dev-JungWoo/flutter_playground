@@ -1,3 +1,7 @@
+// Copyright 2017 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -9,17 +13,15 @@ import 'Item.dart';
 final Map<String, Item> _items = <String, Item>{};
 
 Item _itemForMessage(Map<String, dynamic> message) {
-  if (message['notification'] != null) {
+  if (message['notification'] != null) { // real notification
     final String itemId = 'TestNoficiationId';
-    final Item item = _items
-        .putIfAbsent(itemId, () => new Item(itemId: itemId))
-        ..status = message['notification']['body'];
+    final Item item = _items.putIfAbsent(itemId, () => new Item(itemId: itemId))
+      ..status = message['notification']['body'];
     return item;
-  } else {
+  } else { // test with button
     final String itemId = message['id'];
-    final Item item = _items
-        .putIfAbsent(itemId, () => new Item(itemId: itemId))
-        ..status = message['status'];
+    final Item item = _items.putIfAbsent(itemId, () => new Item(itemId: itemId))
+      ..status = message['status'];
     return item;
   }
 }
@@ -51,8 +53,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
 
   void _navigateToItemDetail(Map<String, dynamic> message) {
     final Item item = _itemForMessage(message);
-    // Clear away dialogs
-    Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
+
     if (!item.route.isCurrent) {
       Navigator.push(context, item.route);
     }
@@ -62,6 +63,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
   void initState() {
     super.initState();
     _firebaseMessaging.configure(
+      //{notification: {title: null, body: Test Message}, data: {}}
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
         _showItemDialog(message);

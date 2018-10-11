@@ -21,13 +21,13 @@ class Item {
   static final Map<String, Route<Null>> routes = <String, Route<Null>>{};
   Route<Null> get route {
     final String routeName = '/detail/$itemId';
+    routes.remove(routeName);
     return routes.putIfAbsent(
       routeName,
-          () => new MaterialPageRoute<Null>(
-        settings: new RouteSettings(name: routeName),
-        builder: (BuildContext context) => new DetailPage(itemId),
-      ),
+      () => new MaterialPageRoute<Null>(
+            settings: new RouteSettings(name: routeName),
+            builder: (BuildContext context) => new DetailPage(itemId),
+          ),
     );
   }
 }
-
